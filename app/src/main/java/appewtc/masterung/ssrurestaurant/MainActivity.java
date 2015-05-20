@@ -10,6 +10,7 @@ public class MainActivity extends ActionBarActivity {
 
     //Explicit
     private UserTABLE objUserTABLE;
+    private FoodTABLE objFoodTABLE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,10 +20,19 @@ public class MainActivity extends ActionBarActivity {
         //Connected Database
         connectedDatabase();
 
+        //Tester
+        tester();
+
     }   // onCreate
+
+    private void tester() {
+        objUserTABLE.addNewValue("testUser", "testPass", "testName");
+        objFoodTABLE.addFood("ข้าวหมูแดง", "50");
+    }
 
     private void connectedDatabase() {
         objUserTABLE = new UserTABLE(this);
+        objFoodTABLE = new FoodTABLE(this);
     }
 
     @Override
