@@ -2,6 +2,7 @@ package appewtc.masterung.ssrurestaurant;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.StrictMode;
@@ -32,7 +33,7 @@ public class MainActivity extends ActionBarActivity {
     private UserTABLE objUserTABLE;
     private FoodTABLE objFoodTABLE;
     private EditText userEditText, passwordEditText;
-    private String userString, passwordString, truePasswordString, nameString;
+    private String userString, passwordString, nameString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +82,11 @@ public class MainActivity extends ActionBarActivity {
         try {
 
             String strMySearch[] = objUserTABLE.searchUser(userString);
-            truePasswordString = strMySearch[2];
             nameString = strMySearch[3];
             Log.d("ssru", "Name ==> " + nameString);
+
+            //Check Password
+            checkPassword(strMySearch[2]);
 
         } catch (Exception e) {
 
@@ -92,6 +95,21 @@ public class MainActivity extends ActionBarActivity {
         }
 
     }   //checkUser
+
+    private void checkPassword(String strTruePassword) {
+
+        if (passwordString.equals(strTruePassword)) {
+
+            Intent objIntent = new Intent(MainActivity.this, OrderActivity.class);
+            objIntent.putExtra("Officer", nameString);
+            startActivity(objIntent);
+            finish();
+
+        } else {
+            myAlertDialog("Password False", "Please Try Again Password False");
+        }
+
+    }   //checkPassword
 
     private void myAlertDialog(String strTitle, String strMessage) {
 
