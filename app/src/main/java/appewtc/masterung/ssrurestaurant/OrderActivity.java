@@ -1,12 +1,16 @@
 package appewtc.masterung.ssrurestaurant;
 
+import android.app.ListActivity;
+import android.database.Cursor;
 import android.os.Build;
-import android.os.StrictMode;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -21,17 +25,48 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 
-public class OrderActivity extends ActionBarActivity {
+public class OrderActivity extends ListActivity{
+
+    private FoodTABLE objFoodTABLE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_order);
+        //setContentView(R.layout.activity_order);
+
+        objFoodTABLE = new FoodTABLE(this);
 
         //Syn JSON to SQLite
         synJSONtoSQLite();
 
+        //Create ListView
+        createListView();
+
     }   // onCreate
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        Cursor objCursor = (Cursor) l.getItemAtPosition(position);
+        String strFood = objCursor.getString(objCursor.getColumnIndex(FoodTABLE.COLUMN_FOOD));
+        String strPrice = objCursor.getString(objCursor.getColumnIndex(FoodTABLE.COLUMN_PRICE));
+
+        Log.d("ssru", strFood + " ราคา " + strPrice);
+
+
+    }   //onListItemClick
+
+    private void createListView() {
+
+        Cursor objCursor = objFoodTABLE.listAllData();
+        String[] from = new String[]{FoodTABLE.COLUMN_FOOD};
+        int[] target = new int[]{R.id.txtShowFood};
+        SimpleCursorAdapter objAdapter = new SimpleCursorAdapter(this,
+                R.layout.activity_order, objCursor, from, target);
+        setListAdapter(objAdapter);
+
+    }   //createListView
 
     private void synJSONtoSQLite() {
 
@@ -89,7 +124,7 @@ public class OrderActivity extends ActionBarActivity {
                 JSONObject jsonObject = objJsonArray.getJSONObject(i);
                 String strFood = jsonObject.getString("Food");
                 String strPrice = jsonObject.getString("Price");
-                FoodTABLE objFoodTABLE = new FoodTABLE(this);
+
                 objFoodTABLE.addFood(strFood, strPrice);
 
             }   // for
