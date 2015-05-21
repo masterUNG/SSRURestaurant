@@ -1,5 +1,7 @@
 package appewtc.masterung.ssrurestaurant;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.StrictMode;
@@ -8,6 +10,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -27,6 +31,8 @@ public class MainActivity extends ActionBarActivity {
     //Explicit
     private UserTABLE objUserTABLE;
     private FoodTABLE objFoodTABLE;
+    private EditText userEditText, passwordEditText;
+    private String userString, passwordString, truePasswordString, nameString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +54,62 @@ public class MainActivity extends ActionBarActivity {
 
 
     }   // onCreate
+
+    public void clickLogin(View view) {
+
+        userEditText = (EditText) findViewById(R.id.editText);
+        passwordEditText = (EditText) findViewById(R.id.editText2);
+        userString = userEditText.getText().toString().trim();
+        passwordString = passwordEditText.getText().toString().trim();
+
+        if (userString.equals("") || passwordString.equals("") ) {
+
+            //Have Space
+            myAlertDialog("โปรดกรอกให้ครบ", "กรุณากรอก user และ password ให้ครบ นะคะ");
+
+        } else {
+
+            //No Space
+            checkUser();
+
+        }
+
+    }   // clickLogin
+
+    private void checkUser() {
+
+        try {
+
+            String strMySearch[] = objUserTABLE.searchUser(userString);
+            truePasswordString = strMySearch[2];
+            nameString = strMySearch[3];
+            Log.d("ssru", "Name ==> " + nameString);
+
+        } catch (Exception e) {
+
+            myAlertDialog("ไม่มี User", "ไม่มี " + userString + " บนฐานข้อมูลของฉัน");
+
+        }
+
+    }   //checkUser
+
+    private void myAlertDialog(String strTitle, String strMessage) {
+
+        AlertDialog.Builder objBuilder = new AlertDialog.Builder(this);
+        objBuilder.setIcon(R.drawable.icon_question);
+        objBuilder.setTitle(strTitle);
+        objBuilder.setMessage(strMessage);
+        objBuilder.setCancelable(false);
+        objBuilder.setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        objBuilder.show();
+
+    }   // myAlertDialog
+
 
     private void deleteAllData() {
 
